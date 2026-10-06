@@ -33,7 +33,7 @@ FFLAGS="-fbounds-check -ffree-form -O3"
 gfortran ${FFLAGS} \
   ${SRC_DIR}/mod_calendar.f90 \
   ${SRC_DIR}/mod_geochem.F  \
-  ${SRC_DIR}/mod_reef_ecosys_param.F \
+  ${SRC_DIR}/mod_marine_comet_param.F \
   ${SRC_DIR}/mod_aquaculture.F \
   ${SRC_DIR}/mod_param.F \
   ${SRC_DIR}/mod_reef_flow.F \
@@ -46,7 +46,7 @@ gfortran ${FFLAGS} \
   ${SRC_DIR}/mod_coral.F \
   ${SRC_DIR}/mod_macroalgae.F \
   ${SRC_DIR}/mod_seagrass.F \
-  ${SRC_DIR}/mod_reef_ecosys.F \
+  ${SRC_DIR}/mod_marine_comet.F \
   ${SRC_DIR}/mod_input.F \
   ${SRC_DIR}/mod_output.F \
   ${SRC_DIR}/main.F \
