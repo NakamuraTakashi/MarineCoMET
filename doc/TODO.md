@@ -5,18 +5,24 @@
 各項目は gfortran 15.2.0 / Ubuntu (WSL2) 上で実測により確認した。再現手順を各項目に記載する。
 
 > **注記 (2026-10-06)**: 名称変更により `mod_reef_ecosys.F` は `mod_marine_comet.F` に、CPP フラグ `REEF_ECOSYS` は `MARINE_COMET` に、サブルーチン `reef_ecosys` 等は `marine_comet` 等に改名された。本文中のファイル名は新名称に更新したが、行番号・フラグ名・エラーログは記録当時のままである。
+>
+> **再検証 (2026-10-06)**: 名称変更の検証時に全13構成を再確認した。2026-08-12〜14 の `mod_coral.F` 改修（`9a2428d`, `2aba88f`）以降、`chamber` と `reef_flow` が再びビルドできなくなっている（項目8）。新たに判明した問題を項目8〜11に追記し、各項目の状態を現状に合わせて更新した。
 
 ## 優先度の概要
 
 | # | 内容 | 影響 | 起因 |
 |---|---|---|---|
 | ~~[1](#1-ecosys_hiscsv-のヘッダとデータの列数が一致しない)~~ | ~~`ecosys_his.csv` のヘッダとデータの列数不一致~~ | 対応済み | マージ |
-| ~~[2](#2-reef_flow-構成がビルドできない)~~ | ~~`reef_flow` 構成がビルド不可~~ | 対応済み（実行は入力データ待ち） | 既存 |
+| [2](#2-reef_flow-構成がビルドできない) | `reef_flow` 構成がビルド不可 | 一度対応済みだが**再発**（項目8）。実行は入力データ待ち | 既存 |
 | ~~[3](#3-blue_tide-を有効にするとコンパイルできない)~~ | ~~`BLUE_TIDE` 有効時にコンパイル不可~~ | 対応済み | 既存 |
 | ~~[4](#4-mod_inputf-num_header-が暗黙の-save-になっている)~~ | ~~`Num_header` の暗黙 SAVE~~ | 対応済み | 既存 |
 | ~~[7](#7-sg_flux_-が未初期化のまま-flux_-にコピーされる)~~ | ~~`Sg_Flux_*` が未初期化のまま `Flux_*` にコピーされる~~ | 対応済み | 既存 |
-| ~~[5](#5-他4つのプロジェクト構成がコンパイルできない)~~ | ~~他4構成がコンパイル不可~~ | `chamber`・`coral_exp_T04` は対応済み。他2つは対象外 | 既存 |
+| [5](#5-他4つのプロジェクト構成がコンパイルできない) | 他4構成がコンパイル不可 | `coral_exp_T04` は対応済み。`chamber` は**再発**（項目8）。他2つは対象外 | 既存 |
 | [6](#6-coral_nutrients-が有効化できない) | `CORAL_NUTRIENTS` が有効化できない | 当該機能が使用不能・**規模大** | 既存 |
+| [8](#8-coral_size_dynamics-が再びコンパイルできない) | `CORAL_SIZE_DYNAMICS` が再びコンパイル不可 | `chamber`・`reef_flow` がビルド不可 | `2aba88f` |
+| [9](#9-run-スクリプトのソース一覧に不足がある) | run スクリプトのソース一覧に不足 | `seagrass_chamber`・`coral/run.sh` がビルド不可 | 既存 |
+| [10](#10-coral_exp_t04-の-in-が旧形式の-namelist) | `coral_exp_T04` の `.in` が旧形式の namelist | 実行開始直後に停止 | 既存 |
+| [11](#11-coral-の診断出力に未初期化値が出る) | `coral` の診断出力に未初期化値 | 出力4列が実行ごとに変わる（計算本体は影響なし） | 既存 |
 
 ---
 
@@ -81,6 +87,8 @@ awk -F',' 'NR<=2{print NR": "NF" 列"}' output/01-ecosys_his.csv
 ## 2. `reef_flow` 構成がビルドできない
 
 **状態**: 2-a・2-b・2-c とも対応済み。ビルドとリンクが通り、全 namelist も読める。ただし**入力データが未配置のため実行はまだできない**（2-d）。
+
+> **2026-10-06 追記**: その後の `mod_coral.F` 改修により、`CORAL_SIZE_DYNAMICS` ブロックが再びコンパイルできなくなり、`reef_flow` はビルド不可に戻っている（項目8）。2-d の入力データも引き続き未配置。
 
 `Projects/reef_flow/cppdefs.h` を使うと失敗していた。独立した原因が3つあった。
 
@@ -287,6 +295,8 @@ Fortran では宣言時に初期化子を書くと暗黙の `SAVE` 属性が付�
 
 **状態**: `chamber`・`coral_exp_T04` は対応済み。`sedecosys_dev_muto`・`test` は**対応しない方針**（使用しないプロジェクトのため）。
 
+> **2026-10-06 追記**: `chamber` は `CORAL_SIZE_DYNAMICS` を有効にしているため、項目8によって再びビルド不可になっている。`coral_exp_T04` はビルドできるが、`.in` が旧形式のため実行できない（項目10）。
+
 `Projects/` 配下の13構成を全て確認したところ、`reef_flow` 以外にも4つが失敗していた。
 
 | 構成 | 状態 |
@@ -339,7 +349,9 @@ done
 
 **状態**: 未対応 / 規模大
 
-サンゴの窒素・リン動態を扱うオプション。**どのプロジェクトも有効にしておらず**、そのため長期間コンパイルされないまま周辺の改修から取り残されている。有効化すると `mod_coral.F` だけで **21件**のエラーが出る。
+> **2026-10-06 再確認**: `mod_coral.F` の改修（`9a2428d`, `2aba88f`）で行番号が大きく移動し、エラー件数も 21件 → **15件**に変わった（`Projects/coral` で有効化した場合）。(4) の粘液プレースホルダは実装済みになっている。以下の行番号は 2026-10-06 時点のもの。
+
+サンゴの窒素・リン動態を扱うオプション。**どのプロジェクトも有効にしておらず**、そのため長期間コンパイルされないまま周辺の改修から取り残されている。有効化すると `mod_coral.F` だけで **15件**のエラーが出る（2026-08-10 時点では21件）。
 
 他のモジュール（`mod_marine_comet.F`, `main.F` など）にエラーは波及しないので、修正は `mod_coral.F` に閉じる。
 
@@ -358,14 +370,14 @@ cd Projects/coral && sh run_win.sh
 
 **(1) 構文の破損（2箇所）**
 
-`mod_coral.F:1100〜1101` — 継続行の `&` が無く、2文に分断されている。
+`mod_coral.F:1495〜1496` — 継続行の `&` が無く、2文に分断されている。
 
 ```fortran
     c_SQC=min((Flux_NH4 +Flux_NO3 )*c_CNP(nC)/c_CNP(nN)     ← 末尾に & が必要
                  ,Flux_PO4 *c_CNP(nC)/c_CNP(nP))
 ```
 
-`mod_coral.F:1364〜1366` — 逆に `&` が余分で、次の代入文と連結されている。
+`mod_coral.F:1843〜1845` — 逆に `&` が余分で、次の代入文と連結されている。現在は `CORAL_SIZE_DYNAMICS` ブロック（項目8）の内側にあるため、`Projects/coral` のように同マクロが無効な構成ではエラーとして現れない。
 
 ```fortran
     F_Cgrowth(iCt) = g_max(n)*min( 1.0d0 - QC0(n)/CORAL(ng)%QCv(iCt,n,i,j) ,    &
@@ -380,10 +392,11 @@ cd Projects/coral && sh run_win.sh
 
 | 行 | 内容 |
 |---|---|
-| 1020 | `CORAL(ng)%QN (isp,n,i,j)` |
-| 1103 | `CORAL(ng)%QC(n,i,j)` （添字数も旧形式のまま） |
-| 2004, 2005 | `ZOOX(ng)%QN`, `ZOOX(ng)%QP`, `ZOOX(ng)%QC` |
-| 2231 | `ZOOX(ng)%QN`, `ZOOX(ng)%QP` |
+| 1415 | `CORAL(ng)%QN (isp,n,i,j)` |
+| 1498 | `CORAL(ng)%QC(n,i,j)` （添字数も旧形式のまま） |
+| 1870〜1872 | `CORAL(ng)%QC` / `%QN` / `%QP`（`CORAL_SIZE_DYNAMICS` 併用時のみ） |
+| 2562, 2563 | `ZOOX(ng)%QN`, `ZOOX(ng)%QP`, `ZOOX(ng)%QC` |
+| 2789 | `ZOOX(ng)%QN`, `ZOOX(ng)%QP` |
 
 `t_coral` / `t_zoox` のどちらのプールに対応させるかは、項目5と同様に用途から判断する必要がある。
 
@@ -392,13 +405,17 @@ cd Projects/coral && sh run_win.sh
 宣言が失われている、または一度も書かれていない。
 
 ```
-rQN, rQP, rPO4coe, c_SQC, c_SQN, c_SQP, c_CNP, nC, nN, nP, tempb,
-F_Ngrowth, F_Pgrowth
+rPO4coe, c_SQC, c_SQN, c_SQP, c_CNP, nC, nN, nP, tempb,
+F_Ngrowth, F_Pgrowth（CORAL_SIZE_DYNAMICS 併用時のみ）
 ```
+
+2026-08-10 時点で挙げていた `rQN`, `rQP` は、その後の改修で宣言済みになった。
 
 `c_CNP(nC)` / `c_CNP(nN)` / `c_CNP(nP)` は C:N:P 比を引く配列とその添字定数と見られるが、定義が見当たらない。`QN0` と `QP0` は宣言されている。
 
-**(4) 未実装のプレースホルダ**
+**(4) 未実装のプレースホルダ — 2026-10-06 時点で実装済み**
+
+現在は `mod_coral.F:1536〜1537` で `F_Nmucus = k_mucus(n,m) * CORAL(ng)%QNe(iNt,n,i,j)*1.d3`（リンも同形）と定式化されている。以下は 2026-08-10 時点の記録。
 
 `CORAL_MUCUS` と併用したときのみ通る箇所（`mod_coral.F:1139` の `#  if defined CORAL_NUTRIENTS` 配下）。
 
@@ -413,9 +430,9 @@ F_Ngrowth, F_Pgrowth
 
 ### 進め方の目安
 
-(1) と (3) は機械的に直せる。(2) は項目5と同じ判断（どのプールを指すか）が要る。(4) はモデルの定式化を決める必要があり、性質が異なる。
+(1) と (3) は機械的に直せる。(2) は項目5と同じ判断（どのプールを指すか）が要る。(4) は実装済み。
 
-そのため「(1)(3) を直して残りのエラーを可視化する」→「(2) をプールごとに判断」→「(4) を検討」の順が現実的。
+そのため「(1)(3) を直して残りのエラーを可視化する」→「(2) をプールごとに判断」の順が現実的。`CORAL_SIZE_DYNAMICS` との併用分は項目8と併せて扱う。
 
 ---
 
@@ -477,6 +494,8 @@ F_Ngrowth, F_Pgrowth
 - `env_his.csv` 全列を走査し、`|x|>1e30` や非正規化数といった異常値が残っていないことを確認
 - `ecosys_his.csv`（物質収支の出力）は修正前とビット単位で完全一致。今回のゴミは `env_his.csv` の当該列にとどまっていた
 
+> **2026-10-06 再確認**: 現在の `seagrass` では `RDOC_13C` が全行 0.0 ではなく、0 から単調に増えて最大 約5e-10 になる。`env_his.csv` 全列に `|x|>1e30` や非正規化数は無く、別ビルド間で出力がビット単位で一致するため、未初期化のゴミではなく計算由来の値と判断した。`seagrass` は `CARBON_ISOTOPE` 無効のため 13C 成分に値が入る経路自体は要確認だが、本項目の不具合の再発ではない。
+
 ### 再現手順
 
 ```sh
@@ -486,20 +505,162 @@ awk -F',' 'NR<=4{print NR": "$18}' output/01-env_his.csv   # RDOC_13C 列
 
 ---
 
+## 8. `CORAL_SIZE_DYNAMICS` が再びコンパイルできない
+
+**状態**: 未対応 / 2026-10-06 判明
+
+項目5で `chamber` を、項目2で `reef_flow` をビルドできるようにしたが、その後の `mod_coral.F` 改修で再び失敗するようになった。両構成とも `CORAL_SIZE_DYNAMICS`（と `CORAL_ZOOXANTHELLAE`）を有効にしている。
+
+```
+src/mod_coral.F:1853:4:
+ 1853 |     F_Cgrowth(iCt) = 5.0d-5 * (CORAL(ng)%QCv(iCt,n,i,j) - QC0(n))
+Error: Function 'f_cgrowth' at (1) has no IMPLICIT type
+```
+
+### 原因
+
+`2aba88f`（2026-08-12「Updated: coral metabolic parameters and functions」）で `coral_polyp` の炭素収支が `F_bio` / `F_Crest` / `F_Cext` に再構成され、`F_Cgrowth` の宣言が削除された。`CORAL_SIZE_DYNAMICS` ブロック（`mod_coral.F:1825〜1885`）はまだ旧変数を参照している。
+
+ソース中にも既に TODO コメントがある（`mod_coral.F:1826〜1831`）。それによると、このブロックには次の問題が残っている。
+
+- `F_Cgrowth` / `F_Ngrowth` / `F_Pgrowth` を配列として参照しているが、もう存在しない
+- `E_m` が一度も代入されないまま読まれる
+- `CORAL(ng)%G` が 0 の場合の割り算に対策が無い
+- `CORAL_NUTRIENTS` 分岐の継続行 `&` が余分（項目6 (1)）
+
+改修するときは、被度の増加の原資として `QCext`（窒素・リンは `QNext` / `QPext`）を使うべき、とコメントにある。
+
+### 影響
+
+`chamber` と `reef_flow` がビルドできない。どちらも `CORAL_SIZE_DYNAMICS` を外せばこのエラーは消えるが、それではサイズ動態を使わない構成になる。サイズ動態を改修するか、当面は両構成で無効化するかの判断が要る。
+
+### 再現手順
+
+```sh
+cd Projects/reef_flow && sh run.sh
+```
+
+---
+
+## 9. run スクリプトのソース一覧に不足がある
+
+**状態**: 未対応 / 2026-10-06 判明
+
+以下の run スクリプトは、他の構成が含めている `mod_aquaculture.F`、`mod_deb_model.F`、`mod_bivalve.F` をコンパイル対象に含めていない。
+
+| スクリプト |
+|---|
+| `Projects/seagrass_chamber/run_win.sh` |
+| `Projects/seagrass_chamber/run_mac.sh` |
+| `Projects/coral/run.sh` |
+
+`mod_param.F` が `USE mod_aquaculture` するため、`mod_aquaculture.mod` が見つからずビルドが止まる。
+
+```
+Fatal Error: Cannot open module file 'mod_aquaculture.mod' for reading at (1): No such file or directory
+```
+
+`seagrass_chamber` の `cppdefs.h` 自体は、他の構成と同じソース一覧（例: `Projects/coral_d13C/run_win.sh`）でビルドすると成功する。2026-08-10 の確認で `seagrass_chamber` を「ビルド成功」としていたのは、構成ファイルを共通のソース一覧でビルドした結果で、スクリプト自体は確認していなかったと考えられる。
+
+### 対処
+
+3つのスクリプトのソース一覧に、`mod_aquaculture.F`（`mod_param.F` の前）、`mod_deb_model.F`、`mod_bivalve.F`（`mod_coral.F` の前）を他の構成と同じ順で追加する。
+
+---
+
+## 10. `coral_exp_T04` の `.in` が旧形式の namelist
+
+**状態**: 未対応 / 2026-10-06 判明
+
+ビルドは通る（項目5）が、実行直後に停止する。
+
+```
+At line 370 of file ../../src/mod_param.F (unit = 5, file = 'stdin')
+Fortran runtime error: Cannot match namelist object name doc1_0
+```
+
+項目 2-d で `reef_flow_01.in` について対応したものと同じ問題で、`&initial` がスカラー個別指定（`DOC1_0` など）の旧形式のまま。該当するのは次の2ファイル。
+
+- `Projects/coral_exp_T04/coral_pre_2w.in`（`run.sh` が使用）
+- `Projects/coral_exp_T04/coral_01.in`
+
+`run_main.sh` が使う `coral_main_*.in`（10ファイル）は新形式（`DOC_0` など）で書かれており、該当しない（実行は未確認）。
+
+### 対処
+
+項目 2-d の対応表に従い、`&initial` を配列形式へ移行する。不足する namelist グループがあれば併せて追加する。
+
+---
+
+## 11. `coral` の診断出力に未初期化値が出る
+
+**状態**: 未対応 / 2026-10-06 判明
+
+`Projects/coral`（`run_win.sh`, `coral_01.in`）で、次の出力列に非正規化数（~1e-310）などのゴミが出る。同じバイナリを2回実行しても値が変わる。
+
+| ファイル | 列 |
+|---|---|
+| `crl01_his.csv`, `crl02_his.csv` | `F_Csec`, `F_detox`, `F_dam` |
+| `zoo01_his.csv`, `zoo02_his.csv` | `Cg_bio` |
+
+それ以外の列と、他のファイル（`ecosys_his.csv`, `env_his.csv` など）は実行間でビット単位に一致する。そのため、ゴミは出力専用の局所変数に限られ、予報変数には波及していないと考えられる。
+
+### 原因
+
+いずれも**宣言と出力しか無く、どこでも代入されていない**局所変数。構成によらず未初期化のまま出力される。
+
+- `F_Csec`, `F_detox`, `F_dam` — `mod_coral.F:1108〜1114` で宣言、`2240` 行で出力
+- `Cg_bio` — `mod_coral.F:2515` で宣言、`2786` 行で出力
+
+履歴上も代入文が存在した時期は無く、`c0b9c87`（2026-01-16「Bugfix: coral calcification process」）で出力列に加えられた時点から未初期化のまま出力されていた。
+
+### 対処
+
+モデルとして意味のある値を計算して代入するか、出力列ごと削除する。当面の対策としてゼロ初期化する手もあるが、意味の無い列が残ることになる。
+
+### 再現手順
+
+```sh
+cd Projects/coral && sh run_win.sh && cp output/01-crl01_his.csv /tmp/a.csv
+sh run_win.sh && cmp /tmp/a.csv output/01-crl01_his.csv   # 差異が出る
+```
+
+---
+
 ## 検証環境
 
 - gfortran 15.2.0 (Ubuntu 15.2.0-16ubuntu1)
 - Linux 6.18.33.2-microsoft-standard-WSL2
 
+2026-10-06 の再検証は次の環境で行った。
+
+- gfortran 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)
+- Linux 6.18.40.1-microsoft-standard-WSL2
+
 ### 構成ごとのビルド状況
 
-`Projects/` 配下の全13構成を確認した結果。
+`Projects/` 配下の全13構成を確認した結果（2026-10-06 更新）。「共通一覧」は `Projects/coral_d13C/run_win.sh` のソース一覧を各構成の `cppdefs.h` でビルドした結果。
 
 | 状態 | 構成 |
 |---|---|
-| ビルド・リンクとも成功 | `chamber`, `coral`, `coral_d13C`, `coral_exp_T04`, `foodweb`, `oyster`, `pelagic_bentic`, `reef_flow`, `sedecosys`, `seagrass`, `seagrass_chamber` |
+| ビルド・リンクとも成功 | `coral`, `coral_d13C`, `coral_exp_T04`, `foodweb`, `oyster`, `pelagic_bentic`, `sedecosys`, `seagrass` |
+| 共通一覧なら成功、自身の run スクリプトでは失敗 | `seagrass_chamber`、および `coral/run.sh`（項目9） |
+| 失敗（再発） | `chamber`, `reef_flow`（項目8） |
 | 対応しない（使用しないプロジェクト） | `sedecosys_dev_muto`, `test`（項目5） |
 
-実行まで確認した構成は `seagrass` のみ（1日分の積分完走と出力 CSV の照合）。
+### 実行確認
+
+2026-10-06 に、次の構成で各1ケースを実行した。
+
+| 構成 | 入力 | 結果 |
+|---|---|---|
+| `coral` | `coral_01.in` | 完走（診断出力4列に未初期化値。項目11） |
+| `coral_d13C` | `coral_01.in` | 完走（365日） |
+| `coral_exp_T04` | `coral_pre_2w.in` | 開始直後に停止（項目10） |
+| `foodweb` | `foodweb_2023NP.in` | 完走 |
+| `oyster` | `oyster_x1.0.in` | 完走 |
+| `pelagic_bentic` | `pelagic_bentic.in` | 完走 |
+| `seagrass` | `seagrass_test1.in` | 完走 |
+| `sedecosys` | `sedecosys.in` | 完走 |
 
 `reef_flow` は入力データ未配置のため実行未確認（項目 2-d）。`chamber` は `.in` ファイルが無く、`runeco_s*.sh` が `mod_*.F90` や `ecosys_test5.F90` という現存しないファイル名を参照しているため実行未確認。
