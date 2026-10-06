@@ -6,6 +6,15 @@ ROMS_DIR=~/COAWST/COAWST_Eco/ROMS
 ECO_DIR=${ROMS_DIR}/Nonlinear/Biology/reef_ecosys
 MOD_DIR=${ROMS_DIR}/Modules
 #
+# The ROMS side has not yet been migrated from reef_ecosys to marine_comet
+# (it still uses mod_reef_ecosys, reef_ecosys(), ...). Syncing now would put
+# mod_marine_comet*.F next to mod_reef_ecosys*.F, and Module.mk compiles both.
+if [ -f ${ECO_DIR}/mod_reef_ecosys.F ] || [ -f ${ECO_DIR}/mod_reef_ecosys_param.F ]; then
+  echo "ERROR: ${ECO_DIR} still contains mod_reef_ecosys*.F."
+  echo "       Rename the ROMS side to marine_comet before syncing."
+  exit 1
+fi
+#
 items=(
 #  "test.txt"
   "mod_bivalve.F"
@@ -15,8 +24,8 @@ items=(
   "mod_foodweb.F"
   "mod_geochem.F"
   "mod_macroalgae.F"
-  "mod_reef_ecosys_param.F"
-  "mod_reef_ecosys.F"
+  "mod_marine_comet_param.F"
+  "mod_marine_comet.F"
   "mod_seagrass.F"
   "mod_sedecosys.F"
 )
@@ -26,19 +35,19 @@ items2=(
 #
 for item in "${items[@]}"; do
     echo "========================================"
-    echo "ROMS to reef_ecosys: ${item}"
+    echo "ROMS to MarineCoMET: ${item}"
     rsync -avu ${ECO_DIR}/${item} src/${item}
     echo "----------------------------------------"
-    echo "reef_ecosys to ROMS: ${item}"
+    echo "MarineCoMET to ROMS: ${item}"
     rsync -avu src/${item} ${ECO_DIR}/${item}
 done
 #
 for item in "${items2[@]}"; do
     echo "========================================"
-    echo "ROMS to reef_ecosys: ${item}"
+    echo "ROMS to MarineCoMET: ${item}"
     rsync -avu ${MOD_DIR}/${item} src/${item}
     echo "----------------------------------------"
-    echo "reef_ecosys to ROMS: ${item}"
+    echo "MarineCoMET to ROMS: ${item}"
     rsync -avu src/${item} ${MOD_DIR}/${item}
 done
 #

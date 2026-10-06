@@ -4,6 +4,8 @@
 
 各項目は gfortran 15.2.0 / Ubuntu (WSL2) 上で実測により確認した。再現手順を各項目に記載する。
 
+> **注記 (2026-10-06)**: 名称変更により `mod_reef_ecosys.F` は `mod_marine_comet.F` に、CPP フラグ `REEF_ECOSYS` は `MARINE_COMET` に、サブルーチン `reef_ecosys` 等は `marine_comet` 等に改名された。本文中のファイル名は新名称に更新したが、行番号・フラグ名・エラーログは記録当時のままである。
+
 ## 優先度の概要
 
 | # | 内容 | 影響 | 起因 |
@@ -20,7 +22,7 @@
 
 ## 1. `ecosys_his.csv` のヘッダとデータの列数が一致しない
 
-**状態**: 対応済み（`mod_reef_ecosys.F` のヘッダ行にラベルを移植）
+**状態**: 対応済み（`mod_marine_comet.F` のヘッダ行にラベルを移植）
 
 `ECOSYS_TESTMODE` の出力で、ヘッダ行が **24列**、データ行が **49列** となり、列名と数値が対応していない。25列ぶんの数値に列名がない状態。
 
@@ -28,14 +30,14 @@
 
 マージで両ブランチの異なる版が組み合わさったため。
 
-- **ヘッダ行** … `src/mod_reef_ecosys.F:1383`（ecology_dev 由来）。SEAGRASS は `sgrass_Pg`, `sgrass_R`, `sgrass_Pn` の **3列**のみ
-- **データ行** … `src/mod_reef_ecosys.F:1448`（master 由来）。SEAGRASS は `GridPhot` 〜 `PO4stockRatio` の **23列**、加えて `SEDIMENT_ECOSYS` のフラックス **5列**
+- **ヘッダ行** … `src/mod_marine_comet.F:1383`（ecology_dev 由来）。SEAGRASS は `sgrass_Pg`, `sgrass_R`, `sgrass_Pn` の **3列**のみ
+- **データ行** … `src/mod_marine_comet.F:1448`（master 由来）。SEAGRASS は `GridPhot` 〜 `PO4stockRatio` の **23列**、加えて `SEDIMENT_ECOSYS` のフラックス **5列**
 
 master では対応するヘッダが `mod_output.F` の `write_ecosys_his_lavel` にあり整合していたが、ecology_dev が出力系を再構成した際に同ルーチンと呼び出し側を削除。マージで ecology_dev 側（削除）を採用した結果、master のデータ行だけが残った。
 
 ### 実施した対応
 
-`src/mod_reef_ecosys.F:1383` のヘッダに、master の `write_ecosys_his_lavel` が持っていたラベルを移植した。ラベル定義は以下で参照できる。
+`src/mod_marine_comet.F:1383` のヘッダに、master の `write_ecosys_his_lavel` が持っていたラベルを移植した。ラベル定義は以下で参照できる。
 
 ```sh
 git show 613a115:src/mod_output.F | sed -n '723,768p'
@@ -92,7 +94,7 @@ Error: Symbol 'flow_output_interval' at (1) has no IMPLICIT type
 
 `Projects/reef_flow/cppdefs.h` だけが、他の全プロジェクトが持つ「出力間隔ブロック」を欠いていた。同じ値のブロックを追加して解消。
 
-`src/mod_reef_flow.F:144` にあるコメントアウトされた `parameter` 定義は旧方式の名残で、`mod_coral.F:1974`、`mod_reef_ecosys.F:513`、`mod_sedecosys.F:782` にも同じものがある。ソース側の変更は不要。
+`src/mod_reef_flow.F:144` にあるコメントアウトされた `parameter` 定義は旧方式の名残で、`mod_coral.F:1974`、`mod_marine_comet.F:513`、`mod_sedecosys.F:782` にも同じものがある。ソース側の変更は不要。
 
 これにより `ECOSYS_OUTPUT_INTERVAL` 未定義も併せて解消した。`main.F` が致命的エラーで打ち切られていたため表面化していなかったもの。
 
@@ -123,7 +125,7 @@ main.F:(.text+0x14d1): undefined reference to `initialize_reef_ecosys_'
 main.F:(.text+0x3081): undefined reference to `reef_ecosys_'
 ```
 
-`mod_reef_ecosys` は本体全体が `#if defined REEF_ECOSYS` で囲まれている（`src/mod_reef_ecosys.F:10`）。一方 `main.F` の3つの呼び出し（267, 275, 474行）は囲まれていない。
+`mod_reef_ecosys` は本体全体が `#if defined REEF_ECOSYS` で囲まれている（`src/mod_marine_comet.F:10`）。一方 `main.F` の3つの呼び出し（267, 275, 474行）は囲まれていない。
 
 `reef_flow` は `REEF_ECOSYS` がコメントアウトされた「流動のみ」構成だったため、モジュール本体が空になり実体が見つからなかった。
 
@@ -194,18 +196,18 @@ cd Projects/reef_flow && sh run.sh
 
 ### `BLUE_TIDE` の役割
 
-無効時、`H2S` と `S0` は `mod_reef_ecosys.F` の内部変数で毎回ゼロにされる（1221〜1223行）ため、硫化物は蓄積しない。有効にすると呼び出し側が保持する**予報変数**に昇格する。
+無効時、`H2S` と `S0` は `mod_marine_comet.F` の内部変数で毎回ゼロにされる（1221〜1223行）ため、硫化物は蓄積しない。有効にすると呼び出し側が保持する**予報変数**に昇格する。
 
 | | 無効 | 有効 |
 |---|---|---|
 | `H2S`, `S0` | 内部変数（475〜478行） | `intent(in)` 仮引数（363〜365行） |
 | `dH2S_dt`, `dS0_dt` | なし | `intent(out)` 仮引数（411〜413行） |
 
-データの流れは、`mod_sedecosys.F:1517` が堆積物からの `Flux_H2S` を出し、`mod_reef_ecosys.F:1366` が最下層に適用、`mod_foodweb.F` が水柱の硫酸還元・酸化を加える、というもの。
+データの流れは、`mod_sedecosys.F:1517` が堆積物からの `Flux_H2S` を出し、`mod_marine_comet.F:1366` が最下層に適用、`mod_foodweb.F` が水柱の硫酸還元・酸化を加える、というもの。
 
 ### 原因
 
-`main.F` に `BLUE_TIDE` の記述が一行も無かった。`mod_reef_ecosys.F` は同マクロ下で `reef_ecosys` の引数を4つ追加するため、`CALL` の引数リストが4つぶんずれ、以降が総崩れになって rank mismatch が10件発生していた。`mod_reef_ecosys.F` / `mod_foodweb.F` / `mod_sedecosys.F` 側は実装済みだった。
+`main.F` に `BLUE_TIDE` の記述が一行も無かった。`mod_marine_comet.F` は同マクロ下で `reef_ecosys` の引数を4つ追加するため、`CALL` の引数リストが4つぶんずれ、以降が総崩れになって rank mismatch が10件発生していた。`mod_marine_comet.F` / `mod_foodweb.F` / `mod_sedecosys.F` 側は実装済みだった。
 
 ### 実施した対応
 
@@ -315,7 +317,7 @@ Fortran では宣言時に初期化子を書くと暗黙の `SAVE` 属性が付�
 
 - `mod_sedecosys_empirical.F` はどの run スクリプトにも含まれない
 - `USE mod_sedecosys_empirical` がソース中に存在しない
-- 呼び出し側 `mod_reef_ecosys.F:1188` が rank2 の引数に `NH4(1)` を渡している
+- 呼び出し側 `mod_marine_comet.F:1188` が rank2 の引数に `NH4(1)` を渡している
 
 選択していたのは、当時ビルドできなかった3構成（`chamber`, `reef_flow`, `test`）だけだった。`chamber` と `reef_flow` では無効化済み。経験式の堆積物モデルを再び使うなら、モジュールの復活から別途必要になる。
 
@@ -339,7 +341,7 @@ done
 
 サンゴの窒素・リン動態を扱うオプション。**どのプロジェクトも有効にしておらず**、そのため長期間コンパイルされないまま周辺の改修から取り残されている。有効化すると `mod_coral.F` だけで **21件**のエラーが出る。
 
-他のモジュール（`mod_reef_ecosys.F`, `main.F` など）にエラーは波及しないので、修正は `mod_coral.F` に閉じる。
+他のモジュール（`mod_marine_comet.F`, `main.F` など）にエラーは波及しないので、修正は `mod_coral.F` に閉じる。
 
 ### 再現手順
 
@@ -425,7 +427,7 @@ F_Ngrowth, F_Pgrowth
 
 ### 原因
 
-`mod_reef_ecosys.F` で、海草モジュールに渡す中継配列 `Sg_Flux_*` がどこでもゼロ初期化されていない。
+`mod_marine_comet.F` で、海草モジュールに渡す中継配列 `Sg_Flux_*` がどこでもゼロ初期化されていない。
 
 ```fortran
  896:    Flux_DOC(:,:) = 0.0d0            ← Flux_DOC は初期化される
@@ -455,7 +457,7 @@ F_Ngrowth, F_Pgrowth
 
 ### 実施した対応
 
-既存の `Flux_*` ゼロ初期化ブロック（`mod_reef_ecosys.F:908` 付近）の直後で、`Sg_Flux_*` も併せてゼロ初期化した。宣言はガードされていないので無条件でよい。
+既存の `Flux_*` ゼロ初期化ブロック（`mod_marine_comet.F:908` 付近）の直後で、`Sg_Flux_*` も併せてゼロ初期化した。宣言はガードされていないので無条件でよい。
 
 ```fortran
     Sg_Flux_DIC(:) = 0.0d0

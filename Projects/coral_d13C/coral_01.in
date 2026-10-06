@@ -180,7 +180,7 @@ U_0 = 5.0d0
 
 ! Coral coverage (0-1) per type.  The two types share every parameter, so type 2
 ! is a byte-for-byte duplicate of type 1 - setting it to 0 skips its computation
-! (mod_reef_ecosys.F guards the coral_polyp call with p_coral > 0) and leaves the
+! (mod_marine_comet.F guards the coral_polyp call with p_coral > 0) and leaves the
 ! crl02 output files empty.  Restore 0.5d0, 0.5d0 to run a 2-point sensitivity
 ! scan with the two types given different parameters.
 p_coral_0 = 0.5d0, 0.0d0  ! Coral coverage (0-1): inner reef, outer reef 

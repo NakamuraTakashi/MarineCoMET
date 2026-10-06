@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Plot time series data from reef_ecosys simulation CSV files.
+Plot time series data from MarineCoMET simulation CSV files.
 Each column is plotted separately.
 
 Two kinds of output can be produced in a single run:
@@ -77,7 +77,7 @@ def _plot_dataframe(df, time_col, csv_stem, plot_output_dir, suffix='', title_ex
 def plot_csv_timeseries(output_dir=None, plot_output_dir=None,
                         start=None, duration=None, zoom_output_dir=None,
                         plot_full=True):
-    """Plot time series data from reef_ecosys CSV files.
+    """Plot time series data from MarineCoMET CSV files.
 
     Parameters
     ----------
@@ -180,7 +180,7 @@ def plot_csv_timeseries(output_dir=None, plot_output_dir=None,
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='Plot time series data from reef_ecosys CSV files',
+        description='Plot time series data from MarineCoMET CSV files',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             'Examples:\n'
