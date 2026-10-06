@@ -127,7 +127,7 @@ CONTAINS
 
   SUBROUTINE allocate_sedecosys(ng, Ngrids, LBi, UBi, LBj, UBj)
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     
     implicit none
 
@@ -205,7 +205,7 @@ CONTAINS
 
   SUBROUTINE initialize_sedecosys(ng, LBi, UBi, LBj, UBj, start_of_new_run)
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     ! USE mod_readinput
     
@@ -497,7 +497,7 @@ CONTAINS
 !!!  Main program of sediment ecosystem model
 !!! **********************************************************************
 ! amb:ambient = bottom grid of water column = Just above seafloor
-! amb will be set as value(1) in mod_reef_ecosys.F
+! amb will be set as value(1) in mod_marine_comet.F
 
   SUBROUTINE sedecosys           &
 !   input parameters
@@ -581,7 +581,7 @@ CONTAINS
 
    !$acc routine seq
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     USE mod_decomposition
     
@@ -589,7 +589,7 @@ CONTAINS
 
 ! ***********************************************************************************
 !!! Declarative statement
-!! These variable names are different from those in mod_reef_ecosys.F
+!! These variable names are different from those in mod_marine_comet.F
 
     !! General
     integer, intent(in) :: ng, i, j

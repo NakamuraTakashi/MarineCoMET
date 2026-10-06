@@ -7,13 +7,13 @@
 PROGRAM main
 ! **********************************************************************
 ! *                                                                    *
-! *   Test program of mod_reef_ecosys                                  *
+! *   Test program of mod_marine_comet                                 *
 ! *                                                                    *
 ! **********************************************************************
 !
-  USE mod_reef_ecosys_param
+  USE mod_marine_comet_param
   USE mod_param
-  USE mod_reef_ecosys
+  USE mod_marine_comet
 #if defined USE_HEAT
   USE mod_heat
 #endif
@@ -284,7 +284,7 @@ PROGRAM main
 #if defined REEF_FLOW
   CALL initialize_reef_flow(1, Ngrids, 1, Im, 1, Jm)
 #endif
-  CALL allocate_reef_ecosys(1, Ngrids, N, 1, Im, 1, Jm)
+  CALL allocate_marine_comet(1, Ngrids, N, 1, Im, 1, Jm)
 
 #ifdef SEAGRASS
   allocate( XI_size (1:Im,1:Jm) ) ! grid size XI-direction (meters)
@@ -292,7 +292,7 @@ PROGRAM main
   XI_size (:,:) = XI_size_in
   ETA_size(:,:) = ETA_size_in
 #endif
-  CALL initialize_reef_ecosys(1, N, dz, 1, Im, 1, Jm      &
+  CALL initialize_marine_comet(1, N, dz, 1, Im, 1, Jm      &
       , start_of_new_run    &   ! TRUE = initialize coral, seagass, macroalgae, sediment from start; FALSE = continue from previous run
 #ifdef SEAGRASS
       , 1, Im, 1, Jm        &   ! grid size info
@@ -497,7 +497,7 @@ PROGRAM main
     Fdep_sed = Fdep_sed_in  ! 2.77d-8 g/cm2/s = 1.0 g/m2/h; Sedimentation rate (g cm-2 s-1) (Positive: sedimentation; Negative: erosion)
 #endif
 
-    CALL reef_ecosys          &
+    CALL marine_comet          &
 !      input parameters
      ( ng, i, j       &   ! ng: nested grid number; i,j: position
      , N              &   ! Number of vertical grid (following ROMS vertical grid)

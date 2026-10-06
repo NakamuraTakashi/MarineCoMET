@@ -5,7 +5,7 @@
 
 !!!**** MODULE FOR REEF_ECOSYS PARAMETER SETTINGS ************************************
 
-MODULE mod_reef_ecosys_param
+MODULE mod_marine_comet_param
   implicit none
 
 ! ==== GEOCHEMICAL PARAMETER SETTINGS ===========================================================
@@ -130,5 +130,5 @@ MODULE mod_reef_ecosys_param
   integer, parameter ::  iOys2  =  2 ! 2: Oyster2 (year-2)
 
 
-END MODULE mod_reef_ecosys_param
+END MODULE mod_marine_comet_param
 

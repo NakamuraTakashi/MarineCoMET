@@ -11,7 +11,7 @@
 
 MODULE mod_param
 
-  USE mod_reef_ecosys_param
+  USE mod_marine_comet_param
 
   implicit none
 !
@@ -304,7 +304,7 @@ contains
 
   subroutine initialize_params(LBi, UBi, LBj, UBj, N, Nid)
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     use mod_geochem
     Use mod_aquaculture
    

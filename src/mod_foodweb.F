@@ -90,7 +90,7 @@ CONTAINS
 
 !-----------------------------------------------------------------------
 !
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     USE mod_decomposition
 

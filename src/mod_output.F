@@ -18,7 +18,7 @@ contains
 !  Open files
 ! **********************************************************************
   SUBROUTINE files_open(OUTFILE_prefix)
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
   
     implicit none
 
@@ -715,7 +715,7 @@ END SUBROUTINE files_close
 
   SUBROUTINE write_sedeco_his_data(OUT_FILE, date)
   
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem, ONLY: d13C_fromR13C
     USE mod_sedecosys
       
@@ -875,7 +875,7 @@ END SUBROUTINE files_close
 
   SUBROUTINE write_sedeco_dia_data(OUT_FILE, date)
   
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     USE mod_sedecosys
      

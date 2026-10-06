@@ -46,7 +46,7 @@ CONTAINS
 !!! **********************************************************************
 
   SUBROUTINE allocate_bivalve(ng, Ngrids, Nz, LBi, UBi, LBj, UBj)
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     
     implicit none
     integer, intent(in) :: ng, Ngrids, Nz, LBi, UBi, LBj, UBj
@@ -86,7 +86,7 @@ CONTAINS
 !!! **********************************************************************
 
   SUBROUTINE initialize_bivalve(ng, Nz, dz, LBi, UBi, LBj, UBj, dens_aqua, f_dens, start_of_new_run)
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_aquaculture
     USE mod_deb_model
     
@@ -269,7 +269,7 @@ CONTAINS
     )
 
 !-----------------------------------------------------------------------
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     USE mod_deb_model
     

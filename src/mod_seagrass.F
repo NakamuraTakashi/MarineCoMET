@@ -191,7 +191,7 @@ MODULE mod_seagrass
 ! ====================================================================================================
 ! Module dependencies
 ! ====================================================================================================
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
 
 ! ====================================================================================================
 ! Variable declarations
@@ -361,7 +361,7 @@ MODULE mod_seagrass
 ! ====================================================================================================
 ! Module dependencies
 ! ====================================================================================================
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
 # if defined SEAGRASS_ROOT_CARBON_OXYGEN_EXCHANGE || defined SEAGRASS_ROOT_NUTRIENT_UPTAKE || defined SEAGRASS_ROOT_POM
     USE mod_sedecosys,    ONLY : SEDECO
 # endif
@@ -933,7 +933,7 @@ MODULE mod_seagrass
 ! ====================================================================================================
 ! Module dependencies
 ! ====================================================================================================
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
 # if defined SEAGRASS_ROOT_CARBON_OXYGEN_EXCHANGE || defined SEAGRASS_ROOT_NUTRIENT_UPTAKE || defined SEAGRASS_ROOT_POM
     USE mod_sedecosys,    ONLY : SEDECO
@@ -3445,7 +3445,7 @@ endif
 ! ====================================================================================================
 ! Module dependencies
 ! ====================================================================================================
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
 # if defined SEAGRASS_ROOT_CARBON_OXYGEN_EXCHANGE || defined SEAGRASS_ROOT_NUTRIENT_UPTAKE || defined SEAGRASS_ROOT_POM
     USE mod_sedecosys,    ONLY : SEDECO
 # endif

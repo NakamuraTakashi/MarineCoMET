@@ -27,7 +27,7 @@ CONTAINS
 !!! **********************************************************************
 
   SUBROUTINE allocate_macroalgae(ng, Ngrids, LBi, UBi, LBj, UBj)
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     
     implicit none
     integer, intent(in) :: ng, Ngrids, LBi, UBi, LBj, UBj
@@ -49,7 +49,7 @@ CONTAINS
 !!! **********************************************************************
 
   SUBROUTINE initialize_macroalgae(ng, LBi, UBi, LBj, UBj)
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
 
     implicit none
@@ -110,7 +110,7 @@ CONTAINS
     )
 
 !-----------------------------------------------------------------------
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     
     implicit none

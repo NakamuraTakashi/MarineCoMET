@@ -80,7 +80,7 @@ CONTAINS
   !$acc routine seq
 
 !-----------------------------------------------------------------------
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     
     implicit none

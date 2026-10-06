@@ -6,7 +6,7 @@
 
 !!!**** MODULE OF ECOSYSTEM MODEL ************************************
 
-MODULE mod_reef_ecosys
+MODULE mod_marine_comet
 #if defined REEF_ECOSYS
 
 contains
@@ -14,8 +14,8 @@ contains
 !!! **********************************************************************
 !!!  Allocate module variables of reef ecosystem model
 !!! **********************************************************************
-SUBROUTINE allocate_reef_ecosys(ng, Ngrids, Nz, LBi, UBi, LBj, UBj)
-  USE mod_reef_ecosys_param
+SUBROUTINE allocate_marine_comet(ng, Ngrids, Nz, LBi, UBi, LBj, UBj)
+  USE mod_marine_comet_param
 # ifdef CORAL_POLYP
   USE mod_coral
 # endif
@@ -38,33 +38,33 @@ SUBROUTINE allocate_reef_ecosys(ng, Ngrids, Nz, LBi, UBi, LBj, UBj)
 
 # ifdef CORAL_POLYP
   CALL allocate_coral(ng, Ngrids, LBi, UBi, LBj, UBj)
-  write(*,*) 'mod_reef_ecosys.F allocate_reef_ecosys() finished coral aloc'
+  write(*,*) 'mod_marine_comet.F allocate_marine_comet() finished coral aloc'
 # endif
 # ifdef SEAGRASS
   CALL allocate_seagrass(ng, Ngrids, LBi, UBi, LBj, UBj)
-  write(*,*) 'mod_reef_ecosys.F allocate_reef_ecosys() finished seagrass aloc'
+  write(*,*) 'mod_marine_comet.F allocate_marine_comet() finished seagrass aloc'
 # endif
 # ifdef MACROALGAE
   CALL allocate_macroalgae(ng, Ngrids, LBi, UBi, LBj, UBj)
-  write(*,*) 'mod_reef_ecosys.F allocate_reef_ecosys() finished macroalgae aloc'
+  write(*,*) 'mod_marine_comet.F allocate_marine_comet() finished macroalgae aloc'
 # endif
 # ifdef SEDIMENT_ECOSYS
   CALL allocate_sedecosys(ng, Ngrids, LBi, UBi, LBj, UBj)
-  write(*,*) 'mod_reef_ecosys.F allocate_reef_ecosys() finished sediment aloc'
+  write(*,*) 'mod_marine_comet.F allocate_marine_comet() finished sediment aloc'
 # endif
 # ifdef BIVALVE
   CALL allocate_bivalve(ng, Ngrids, Nz, LBi, UBi, LBj, UBj)
-  write(*,*) 'mod_reef_ecosys.F allocate_reef_ecosys() finished bivalve aloc'
+  write(*,*) 'mod_marine_comet.F allocate_marine_comet() finished bivalve aloc'
 # endif
     
   RETURN
-END SUBROUTINE allocate_reef_ecosys
+END SUBROUTINE allocate_marine_comet
 
 
 !!! **********************************************************************
 !!!  Set initial conditions for reef ecosystem model
 !!! **********************************************************************
-  SUBROUTINE initialize_reef_ecosys(ng, Nz, dz, LBi, UBi, LBj, UBj &
+  SUBROUTINE initialize_marine_comet(ng, Nz, dz, LBi, UBi, LBj, UBj &
       , start_of_new_run    &   ! TRUE = initialize coral, seagass, macroalgae, sediment from start; FALSE = continue from previous run
 # ifdef SEAGRASS
       , IstrR, IendR, JstrR, JendR      &
@@ -77,7 +77,7 @@ END SUBROUTINE allocate_reef_ecosys
 # endif
     )
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
 # ifdef CORAL_POLYP
     USE mod_coral
 # endif
@@ -111,15 +111,15 @@ END SUBROUTINE allocate_reef_ecosys
     real(8), intent(in) :: f_dens                           ! Factor to adjust oyster density (default = 1.0)
 # endif
 
-    write(*,*) 'mod_reef_ecosys.F initialize_reef_ecosys() start_of_new_run =', start_of_new_run
+    write(*,*) 'mod_marine_comet.F initialize_marine_comet() start_of_new_run =', start_of_new_run
 
 # ifdef CORAL_POLYP
     CALL initialize_coral(ng, LBi, UBi, LBj, UBj, start_of_new_run)
-    write(*,*) 'mod_reef_ecosys.F initialize_reef_ecosys() finished coral init'
+    write(*,*) 'mod_marine_comet.F initialize_marine_comet() finished coral init'
 # endif
 # ifdef SEDIMENT_ECOSYS
     CALL initialize_sedecosys(ng, LBi, UBi, LBj, UBj, start_of_new_run)
-    write(*,*) 'mod_reef_ecosys.F initialize_reef_ecosys() finished sediment init'
+    write(*,*) 'mod_marine_comet.F initialize_marine_comet() finished sediment init'
 # endif
 # ifdef SEAGRASS
     CALL initialize_seagrass( ng, IstrR, IendR, JstrR, JendR    &
@@ -127,26 +127,26 @@ END SUBROUTINE allocate_reef_ecosys
                             , XI_size, ETA_size         & ! grid size XI-direction (meters); grid size ETA-direction (meters)
                             , p_sgrass                  & ! seagrass coverage (habitat area/grid area)
                             )
-    write(*,*) 'mod_reef_ecosys.F initialize_reef_ecosys() finished seagrass init'
+    write(*,*) 'mod_marine_comet.F initialize_marine_comet() finished seagrass init'
 # endif
 # ifdef MACROALGAE
     CALL initialize_macroalgae(ng, LBi, UBi, LBj, UBj)
-    write(*,*) 'mod_reef_ecosys.F initialize_reef_ecosys() finished macroalgae init'
+    write(*,*) 'mod_marine_comet.F initialize_marine_comet() finished macroalgae init'
 # endif
 # ifdef BIVALVE
     CALL initialize_bivalve(ng, Nz, dz, LBi, UBi, LBj, UBj, dens_aqua, f_dens, start_of_new_run)
-    write(*,*) 'mod_reef_ecosys.F initialize_reef_ecosys() finished bivalv init'
+    write(*,*) 'mod_marine_comet.F initialize_marine_comet() finished bivalv init'
 # endif
 
     RETURN
-  END SUBROUTINE initialize_reef_ecosys
+  END SUBROUTINE initialize_marine_comet
 
 
 !!! **********************************************************************
 !!!  Main program of reef ecosystem model
 !!! **********************************************************************
 
-  SUBROUTINE reef_ecosys         &
+  SUBROUTINE marine_comet         &
 !        input parameters
     ( ng, i, j       &   ! ng: nested grid number; i,j: position
     , N              &   ! Number of vertical grid (following ROMS vertical grid)
@@ -289,7 +289,7 @@ END SUBROUTINE allocate_reef_ecosys
 !      A vertical section of the ecosys grid showing water column.      
 !-----------------------------------------------------------------------
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
 # ifdef CORAL_POLYP
     USE mod_coral
@@ -1526,7 +1526,7 @@ END SUBROUTINE allocate_reef_ecosys
 # endif
 
     RETURN
-  END SUBROUTINE reef_ecosys
+  END SUBROUTINE marine_comet
 
 !-----------------------------------------------------------------------
 !!! **********************************************************************
@@ -1675,5 +1675,5 @@ END SUBROUTINE allocate_reef_ecosys
     RETURN
   END SUBROUTINE bio_vadv2
 #endif
-END MODULE mod_reef_ecosys
+END MODULE mod_marine_comet
 

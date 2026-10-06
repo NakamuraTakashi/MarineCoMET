@@ -104,7 +104,7 @@ CONTAINS
 
   SUBROUTINE allocate_coral(ng, Ngrids, LBi, UBi, LBj, UBj)
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
 
     implicit none
 ! input parameters
@@ -193,7 +193,7 @@ CONTAINS
 
   SUBROUTINE initialize_coral(ng, LBi, UBi, LBj, UBj, start_of_new_run)
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     
     implicit none
@@ -481,7 +481,7 @@ CONTAINS
 
 !-----------------------------------------------------------------------
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
     USE mod_deb_model
     
@@ -2399,7 +2399,7 @@ CONTAINS
     )
 !-----------------------------------------------------------------------
 
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
     USE mod_geochem
 
     implicit none
@@ -2832,7 +2832,7 @@ CONTAINS
     , F_zROS          & ! Flux of ROS from photosystem (pmol cell-1 s-1)
     )
 !-----------------------------------------------------------------------
-    USE mod_reef_ecosys_param
+    USE mod_marine_comet_param
 
     implicit none
 !   input parameters
