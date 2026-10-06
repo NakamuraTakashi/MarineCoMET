@@ -3,11 +3,16 @@
 
 #include "cppdefs.h"
 
+/* Backward compatibility: accept the former flag name REEF_ECOSYS
+   (still used by the COAWST/ROMS cppdefs) as MARINE_COMET. */
+#if defined REEF_ECOSYS && !defined MARINE_COMET
+# define MARINE_COMET
+#endif
 
 !!!**** MODULE OF ECOSYSTEM MODEL ************************************
 
 MODULE mod_marine_comet
-#if defined REEF_ECOSYS
+#if defined MARINE_COMET
 
 contains
 

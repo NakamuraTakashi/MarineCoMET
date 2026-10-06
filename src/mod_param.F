@@ -396,7 +396,7 @@ contains
     i=i+1
     iSedi=ic+i
 
-! REEF_ECOSYS parameter IDs
+! MARINE_COMET parameter IDs
     i=i+1
     iOxyg=ic+i
     i=i+1

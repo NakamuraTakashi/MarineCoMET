@@ -3,7 +3,7 @@
 
 #include "cppdefs.h"
 
-!!!**** MODULE FOR REEF_ECOSYS PARAMETER SETTINGS ************************************
+!!!**** MODULE FOR MARINE_COMET PARAMETER SETTINGS ************************************
 
 MODULE mod_marine_comet_param
   implicit none

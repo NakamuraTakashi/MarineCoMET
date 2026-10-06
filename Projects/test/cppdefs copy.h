@@ -7,9 +7,9 @@
 
 /*----- CPP defines for coral module ----------------*/
 /***  Biological model options. (Original CPP flags) ***/
-#define REEF_ECOSYS
+#define MARINE_COMET
 
-#if defined REEF_ECOSYS
+#if defined MARINE_COMET
 # define BIOLOGY
 # define ANA_BIOLOGY
 

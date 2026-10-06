@@ -376,7 +376,7 @@ PROGRAM main
 #endif
 
 !----- Ecosystem model ----------------------------------------
-!=== Import ROMS tracer arrays into REEF_ECOSYS model arrays ===
+!=== Import ROMS tracer arrays into MARINE_COMET model arrays ===
     Tmp(:) = t(i,j,:,nstp,iTemp)       
     Sal(:) = t(i,j,:,nstp,iSalt)       
     DOx(:) = t(i,j,:,nstp,iOxyg)       
@@ -612,7 +612,7 @@ PROGRAM main
 !!!<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<KM:Add
       )                    
 
-!=== Export REEF_ECOSYS model arrays into ROMS tracer arrays ===
+!=== Export MARINE_COMET model arrays into ROMS tracer arrays ===
     dtrc_dt(:,iTemp) = dTemp_dt(:)        
     dtrc_dt(:,iSalt) = dSalt_dt(:)        
     dtrc_dt(:,iOxyg) = dDOx_dt(:)        

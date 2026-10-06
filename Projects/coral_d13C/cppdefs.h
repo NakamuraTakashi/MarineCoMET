@@ -7,15 +7,15 @@
 
 /***  Biological model options. (Original CPP flags) ***/
 
-#define REEF_ECOSYS
+#define MARINE_COMET
 
-#if defined REEF_ECOSYS || defined SEDIMENT
+#if defined MARINE_COMET || defined SEDIMENT
 /*# define ANA_TOBC_BIO*/
 /*# define ANA_TOBC_SED*/
 /*# define BIO_VPROFILE_YAEYAMA*/
 #endif
 
-#if defined REEF_ECOSYS
+#if defined MARINE_COMET
 # define BIOLOGY
 # define DIAGNOSTICS_BIO
 # define ANA_BIOLOGY
@@ -34,7 +34,7 @@
 /*# define SULFUR_TRACE*/
 
 
-/*** REEF_ECOSYS compartments ***/
+/*** MARINE_COMET compartments ***/
 # define CORAL_POLYP  /* USE coral module */
 /*# define SEAGRASS*/     /* USE seagrass module */
 /*# define MACROALGAE*/   /* USE algae module  */
