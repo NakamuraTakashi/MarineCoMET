@@ -1,0 +1,39 @@
+
+&mricom
+! Directory of FORP data files
+!! FORP-JPN02: JRA55do historical
+!  MRICOM_data_dir = "/mnt/w/share/dias/data/FORP/FORP-JPN02/version4/JRA55do_historical_ver4/ts_2006-2018/nc_day/2006/"
+
+!! FORP-JPN02: MRI-CGCM3_rcp85
+!  MRICOM_data_dir = "/mnt/w/share/dias/data/FORP/FORP-JPN02/version4//MRI-CGCM3_rcp85_ver4/ts_2086-2100/nc_day/2100/"
+
+! Directory of MOVEJPN_MRI data files
+!  MRICOM_data_dir = "/mnt/f/DATA/MOVEJPN_MRI_2020/2010/"
+
+! Directory of FORA OPeNDAP url
+!  MRICOM_data_dir = "https://www.jamstec.go.jp/jagdas/dodsC/fora/JPN/Daily-mean/"
+  MRICOM_data_dir = "/mnt/w/share/FORA-JPN60/SST/"
+/
+
+&sdate
+  Syear  = 1960   ! Starting year
+  Smonth = 1      ! Starting month
+  Sday   = 1     ! Starting day
+/
+
+&edate
+  Eyear  = 2021   ! Ending year   !!!4/30, 5/31, 6/30, 7/31, 8/31
+  Emonth = 1      ! Ending month
+  Eday   = 1      ! Ending day
+/
+
+&refdate
+  Ryear  = 2000   ! Reference year
+  Rmonth = 1      ! Reference month
+  Rday   = 1      ! Reference day
+/
+
+&his
+  HIS_prefix  = "/mnt/w/nakamura/output/temp_stress"
+/
+

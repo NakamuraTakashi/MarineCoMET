@@ -76,7 +76,58 @@ SUBROUTINE jd(yyyy, mm, dd, julian)
  C = mm + (12*A) - 3
  julian = dd + ((153*C+2)/5) + 365*B + (B/4) - (B/100) + (B/400) - 32045
       
-END SUBROUTINE
+END SUBROUTINE jd
+
+!**************************************************************
+
+!converts calendar date to julian date number.
+SUBROUTINE dble_jd(iyear, imonth, iday, ihour, imin, dble_julian)
+
+ integer, intent(IN)  :: iyear
+ integer, intent(IN)  :: imonth
+ integer, intent(IN)  :: iday
+ integer, intent(IN)  :: ihour
+ integer, intent(IN)  :: imin
+ real(8), intent(OUT) :: dble_julian
+ integer:: julian
+
+ Call jd(iyear, imonth, iday, julian)
+ dble_julian = dble(julian) + (dble(ihour)/24.0d0) + (dble(imin)/1440.0d0)
+      
+END SUBROUTINE dble_jd
+
+!**************************************************************
+
+!converts ex. from 20240709 to 2024, 7, 9.
+SUBROUTINE yyyymmdd2year_month_day(yyyymmdd, iyear, imonth, iday)
+
+ integer, intent(IN )  :: yyyymmdd
+ integer, intent(OUT)  :: iyear
+ integer, intent(OUT)  :: imonth
+ integer, intent(OUT)  :: iday
+
+ iyear  = yyyymmdd/10000
+ imonth = (yyyymmdd-iyear*10000)/100
+ iday   = yyyymmdd-iyear*10000-imonth*100
+      
+END SUBROUTINE yyyymmdd2year_month_day
+
+!**************************************************************
+
+!converts calendar date to julian date number.
+SUBROUTINE dble_jd2(yyyyMMdd, hhmm, dble_julian)
+
+ integer, intent(IN)  :: yyyyMMdd
+ integer, intent(IN)  :: hhmm
+ real(8), intent(OUT) :: dble_julian
+ integer :: iyear, imonth, iday, ihour, imin
+
+ Call yyyymmdd2year_month_day(yyyyMMdd, iyear, imonth, iday)
+ ihour  = hhmm/100
+ imin   = hhmm-100*ihour
+ Call dble_jd(iyear, imonth, iday, ihour, imin, dble_julian)
+      
+END SUBROUTINE dble_jd2
 
 !**************************************************************
 
@@ -101,6 +152,70 @@ SUBROUTINE cdate(jd, yyyy, mm, dd)
  dd = dd + 1
 
 END SUBROUTINE cdate
+
+!**************************************************************
+
+!converts julian date number to calendar date
+SUBROUTINE dble_jd2cdate(dble_jd, iyear, imonth, iday, ihour, imin)
+ real(8), intent(IN)   :: dble_jd
+ integer, intent(OUT)  :: iyear
+ integer, intent(OUT)  :: imonth
+ integer, intent(OUT)  :: iday
+ integer, intent(OUT)  :: ihour
+ integer, intent(OUT)  :: imin
+
+ integer :: jd
+
+ jd = nint(dble_jd)  ! integer part of julian date number
+ Call cdate(jd, iyear, imonth, iday)
+ ihour = nint( (dble_jd - dble(jd))*24.0d0 )
+ imin  = nint( (dble_jd - dble(jd) - dble(ihour)/24.0d0)*1440.0d0 )
+
+END SUBROUTINE dble_jd2cdate
+
+!**************************************************************
+
+!converts julian date number to calendar date
+SUBROUTINE dble_jd2yyyyMMMdd_hhmm(dble_jd, yyyyMMdd, hhmm)
+ real(8), intent(IN)   :: dble_jd
+ integer, intent(OUT)  :: yyyyMMdd
+ integer, intent(OUT)  :: hhmm
+
+ integer :: iyear, imonth, iday, ihour, imin
+
+ Call dble_jd2cdate(dble_jd, iyear, imonth, iday, ihour, imin)
+ yyyymmdd = iyear*10000 + imonth*100 + iday
+ hhmm = ihour*100 + imin
+
+END SUBROUTINE dble_jd2yyyyMMMdd_hhmm
+
+!**************************************************************
+
+!converts a (double) julian date number to a "YYYYMMDD.HHMM" string.
+!Rounds to the nearest minute and handles day roll-over in both
+!directions (e.g. a small negative offset rolling back to the
+!previous day's 23:HH). Unlike dble_jd2cdate this floors the integer
+!day part (int), so it stays correct for hours >= 12.
+SUBROUTINE jd2yyyymmddpHHMM(dble_jd, str)
+ real(8), intent(IN)        :: dble_jd
+ character(13), intent(OUT) :: str   ! "YYYYMMDD.HHMM"
+
+ integer :: ijd, imin_total
+ integer :: iyear, imonth, iday, ihour, imin
+
+ ijd        = int( dble_jd + 1.0d-8 )                      ! floor of the julian day
+ imin_total = nint( (dble_jd - dble(ijd))*1440.0d0 )       ! minutes into that day
+ if(imin_total >= 1440) then                               ! rounded up to next day
+   imin_total = imin_total - 1440 ; ijd = ijd + 1
+ else if(imin_total < 0) then                              ! negative offset -> prev day
+   imin_total = imin_total + 1440 ; ijd = ijd - 1
+ end if
+ Call cdate(ijd, iyear, imonth, iday)
+ ihour = imin_total/60
+ imin  = mod(imin_total,60)
+ write(str,'(I4.4,2I2.2,".",2I2.2)') iyear, imonth, iday, ihour, imin
+
+END SUBROUTINE jd2yyyymmddpHHMM
 
 !**************************************************************
 
@@ -158,9 +273,7 @@ SUBROUTINE oceantime2cdate(ocean_time, Ryear, Rmonth, Rday, YYYYMMDDpHH)
   hh = int( ( ocean_date - dble( floor(ocean_date) ) )*24.0d0 )
 
   write (YYYYMMDDpHH, "(I4.4, I2.2, I2.2, '.', I2.2)") yyyy, mm, dd, hh
-
-  write(*,*) "DEBUG :", yyyy, mm, dd, hh, YYYYMMDDpHH
-   
+ 
  END SUBROUTINE oceantime2cdate
  
 END MODULE mod_calendar
