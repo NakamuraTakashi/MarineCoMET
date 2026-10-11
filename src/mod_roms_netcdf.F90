@@ -1673,7 +1673,7 @@ MODULE mod_roms_netcdf
     call check( nf90_put_att(ncid, var_id, '_FillValue', Fill_Val) )
 
     call check( nf90_def_var(ncid, 'DCW', NF90_DOUBLE, dim3Dids, var_id) )
-    call check( nf90_put_att(ncid, var_id, 'long_name', 'Degree Coolong Week') )
+    call check( nf90_put_att(ncid, var_id, 'long_name', 'Degree Cooling Week') )
     call check( nf90_put_att(ncid, var_id, 'units',     'degC-week') )
     call check( nf90_put_att(ncid, var_id, 'time',      'ocean_time') )
     call check( nf90_put_att(ncid, var_id, '_FillValue', Fill_Val) )

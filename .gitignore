@@ -33,6 +33,8 @@
 #*.txt
 *.xlsx
 *.png
+*.nc
+*.mp4
 !.gitkeep
 
 # Input Files
