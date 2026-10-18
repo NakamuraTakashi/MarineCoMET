@@ -35,6 +35,9 @@
 *.png
 *.nc
 *.mp4
+*.log
+*.status
+*.pyc
 !.gitkeep
 
 # Input Files

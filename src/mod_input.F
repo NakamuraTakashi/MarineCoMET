@@ -383,7 +383,7 @@ contains
   
     do j=1, Num_file
 ! ----- Open data ---------------------------------------------
-      open(77,file=FILE_NAME(j))     
+      open(77,file=FILE_NAME(j),status='old')
 !  ---- count data number -----
       num_d(j) = 0
       do
@@ -401,7 +401,7 @@ contains
 
     do j=1, Num_file
 ! ----- Open data ---------------------------------------------
-      open(77,file=FILE_NAME(j))     
+      open(77,file=FILE_NAME(j),status='old')
         
 !  ---- Read data -----
       do i=1, Num_header
@@ -439,7 +439,7 @@ contains
   
     do j=1, Num_file
 ! ----- Open data ---------------------------------------------
-      open(77,file=FILE_NAME(j))     
+      open(77,file=FILE_NAME(j),status='old')
 !  ---- count data number -----
       num_d(j) = 0
       do
@@ -458,7 +458,7 @@ contains
 
     do j=1, Num_file
 ! ----- Open data ---------------------------------------------
-      open(77,file=FILE_NAME(j))     
+      open(77,file=FILE_NAME(j),status='old')
         
 !  ---- Read data -----
       do i=1, Num_header
@@ -610,7 +610,7 @@ contains
   
     do j=1, Num_file
 ! ----- Open data ---------------------------------------------
-      open(77,file=FILE_NAME(j))     
+      open(77,file=FILE_NAME(j),status='old')
 !  ---- count data number -----
       num_d(j) = 0
       do
@@ -629,7 +629,7 @@ contains
 
     do j=1, Num_file
 ! ----- Open data ---------------------------------------------
-      open(77,file=FILE_NAME(j))     
+      open(77,file=FILE_NAME(j),status='old')
         
 !  ---- Read data -----
       do i=1, Num_header
@@ -705,17 +705,17 @@ contains
 ! ===== READ PPFD data ======================================================
 !         time (hour), PPFD (umol m-2 s-1)
 #if defined CHAMBER_SITE4
-    open(77,file='./input/pfd_04.txt')
+    open(77,file='./input/pfd_04.txt',status='old')
 #elif defined CHAMBER_SITE5
-    open(77,file='./input/pfd_05.txt')
+    open(77,file='./input/pfd_05.txt',status='old')
 #elif defined CHAMBER_SITE6
-    open(77,file='./input/pfd_06.txt')
+    open(77,file='./input/pfd_06.txt',status='old')
 #elif defined CHAMBER_SITE7
-    open(77,file='./input/pfd_07.txt')
+    open(77,file='./input/pfd_07.txt',status='old')
 #elif defined CHAMBER_SITE9
-    open(77,file='./input/pfd_09.txt')
+    open(77,file='./input/pfd_09.txt',status='old')
 #elif defined CHAMBER_SITE10
-    open(77,file='./input/pfd_10.txt')
+    open(77,file='./input/pfd_10.txt',status='old')
 #endif
 ! ----- Count data -----
 !    N_PFD = 0
@@ -742,17 +742,17 @@ contains
 ! ===== READ TA and DIC data =================================================
 !         time (hour), TA & DIC (umol kg-1)
 #if defined CHAMBER_SITE4
-    open(77,file='./input/site04.txt')
+    open(77,file='./input/site04.txt',status='old')
 #elif defined CHAMBER_SITE5
-    open(77,file='./input/site05.txt')
+    open(77,file='./input/site05.txt',status='old')
 #elif defined CHAMBER_SITE6
-    open(77,file='./input/site06.txt')
+    open(77,file='./input/site06.txt',status='old')
 #elif defined CHAMBER_SITE7
-    open(77,file='./input/site07.txt')
+    open(77,file='./input/site07.txt',status='old')
 #elif defined CHAMBER_SITE9
-    open(77,file='./input/site09.txt')
+    open(77,file='./input/site09.txt',status='old')
 #elif defined CHAMBER_SITE10
-    open(77,file='./input/site10.txt')
+    open(77,file='./input/site10.txt',status='old')
 #endif
 ! ----- Count data -----
     N_WQ = 0

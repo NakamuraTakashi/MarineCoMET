@@ -2237,7 +2237,7 @@ CONTAINS
 #  endif
 #  if defined CORAL_ZOOXANTHELLAE
 ! TODO アウトプット未検討
-       , CORAL(ng)%ROS(n,i,j), Rz, F_Csec, F_zROS, F_detox, F_dam                &
+       , CORAL(ng)%ROS(n,i,j), Rz, F_Csec(iCt), F_zROS, F_detox, F_dam           &
 #  endif
 #  if defined CORAL_BORON_ISOTOPE
        , d11Barg                                                                 &

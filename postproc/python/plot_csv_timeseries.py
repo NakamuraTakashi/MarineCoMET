@@ -37,6 +37,19 @@ def _fmt_day(v):
     return f'{v:g}'
 
 
+def _count_header_and_data_fields(csv_path):
+    """Return (number of header labels, number of fields in the first data row).
+
+    The second element is None when the file holds a header and nothing else.
+    """
+    with open(csv_path, newline='') as fh:
+        header = fh.readline()
+        for line in fh:
+            if line.strip():
+                return header.count(',') + 1, line.count(',') + 1
+    return header.count(',') + 1, None
+
+
 def _plot_dataframe(df, time_col, csv_stem, plot_output_dir, suffix='', title_extra=''):
     """Plot every non-time column of `df` into `plot_output_dir`.
 
@@ -131,12 +144,29 @@ def plot_csv_timeseries(output_dir=None, plot_output_dir=None,
         # the same thing.  pandas raises EmptyDataError on those, which used to
         # abort the whole loop - and because the files are processed in sorted
         # order, an empty crl02 stopped ecosys and env from ever being plotted.
+        # index_col=False keeps the first column as a column.  Without it, a file
+        # whose header has fewer names than the data has fields makes pandas
+        # silently absorb the first column into the index: every label then sits
+        # one column to the left of its data and 'time' holds what is really the
+        # second variable, so the x axis is plotted from the wrong series with no
+        # error.  A Fortran write statement that emits an array where the label
+        # list has one name produces exactly that, so check the two counts here
+        # and say so rather than plotting a shifted frame.
         try:
-            df = pd.read_csv(csv_path)
+            df = pd.read_csv(csv_path, index_col=False)
         except pd.errors.EmptyDataError:
             print(f'Skipping (empty): {csv_file}')
             print()
             continue
+        n_labels, n_fields = _count_header_and_data_fields(csv_path)
+        if n_fields is not None and n_labels != n_fields:
+            print(f'WARNING: {csv_file}: {n_labels} header labels but '
+                  f'{n_fields} data columns.')
+            print('         The CSV writer and its label list disagree; column '
+                  'names may not match the data.')
+            if n_fields > n_labels:
+                print(f'         Plotting the first {n_labels} columns and '
+                      f'dropping the last {n_fields - n_labels}.')
         if df.empty or len(df.columns) == 0:
             print(f'Skipping (no rows): {csv_file}')
             print()
