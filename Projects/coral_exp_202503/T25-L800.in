@@ -1,7 +1,7 @@
 
 &ecosys_config
 ! Simulation period     
-  Tmax = 5.0d0 ! days    ! 3years: 1095 / 5years: 1825 / 40years: 14600 / 100years: 36500
+  Tmax = 15.0d0 ! days    ! 3years: 1095 / 5years: 1825 / 40years: 14600 / 100years: 36500
 
 ! Start time
   time0 = 0.0d0 ! day
@@ -53,7 +53,7 @@
 !    
 !           1       5     8 9 10  12
 !           |       |     | | |   |
-  in_file = 0,0,0,0,0,0,0,0,0,0,0,0
+  in_file = 0,0,0,0,0,0,0,0,1,1,0,0
 /
 
 &input
@@ -70,9 +70,9 @@
   Cloud_FILE = "input/Ishigaki_frc_JMAobs_2018_cloud.nc"    ! Relative humidity (%)
 
 ! Only ascii text file is acceptable.
-  PPFD_FILE  = "input/PPFD_day_since_20150828_000000.txt"  !!! Used
+  PPFD_FILE  = "input/PPFD_800.csv"  !!! Used
 ! Only ascii text file is acceptable.
-  WTEMP_FILE  = "input/temp_day_since_20150828_000000.txt" !!! Used
+  WTEMP_FILE  = "input/temp_25.csv" !!! Used
   
   WLEVEL_FILE = "input/level2017.txt"
 ! Only ascii text file is acceptable.
@@ -80,7 +80,7 @@
 /
 
 &output   
-  OUTFILE_prefix = 'output01/test'
+  OUTFILE_prefix = 'output01/T25-L800'
 /
 
 &sedeco_config

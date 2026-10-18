@@ -40,6 +40,18 @@ FFLAGS="-fbounds-check -ffree-form -O3"
 EXE=ecosys_test.exe
 LOG_DIR=logs
 PLOT_SCRIPT=../../postproc/python/plot_csv_timeseries.py
+SUMMARY_SCRIPT=../../postproc/python/plot_case_overlay.py
+
+# --- Case-overlay (summary) plots --------------------------------------------
+#   After the per-case plots, each variable below is drawn with every case of an
+#   output directory overlaid, into <output dir>/plot_summary.  Format:
+#   <file>:<col>[,<col>...]  (see plot_case_overlay.py; run_plot_summary.sh
+#   redraws them without rerunning the model).
+SUMMARY_VARS=(
+  "crl01:Pg,Pn,G"
+  "zphot01:Fv_Fm"
+  "zoo01:Chl,Chl_ug_cm-2,dens"
+)
 
 # --- Debug build: catch uninitialised values ---------------------------------
 #   Fortran namelist input assigns only the variables that appear in the .in file
@@ -204,11 +216,32 @@ for i in "${!CASES[@]}"; do
 done
 
 # ----------------------------------------------------------------------
-# Plot, one job per output directory
+# Plot: case overlays first, then per-case plots (one job per output directory)
 # ----------------------------------------------------------------------
-# plot_csv_timeseries.py plots every CSV in a directory, so cases sharing an
-# output directory are covered by a single invocation.
 if (( DO_PLOT )) && (( ${#OK_CASES[@]} > 0 )); then
+  # One overlay job per output directory, limited to the cases that succeeded.
+  echo "=== Plotting case overlays ==="
+  declare -A DIR_CASES=()
+  for i in "${OK_CASES[@]}"; do
+    dir=${OUTDIRS[i]}
+    DIR_CASES[$dir]+=" $(basename "${PREFIXES[i]}")"
+  done
+  var_args=()
+  for v in "${SUMMARY_VARS[@]}"; do var_args+=(-v "$v"); done
+  for dir in "${!DIR_CASES[@]}"; do
+    log=${LOG_DIR}/$(basename "${dir}").summary.log
+    # shellcheck disable=SC2086  # the case list is meant to split
+    if uv run "${SUMMARY_SCRIPT}" -o "${dir}" -p "${dir}/plot_summary" \
+         "${var_args[@]}" -c ${DIR_CASES[$dir]} > "${log}" 2>&1; then
+      printf '  [done]   %-28s -> %s/plot_summary\n' "${dir}" "${dir}"
+    else
+      printf '  [FAILED] %-28s -> %s\n' "${dir}" "${log}"
+    fi
+  done
+  echo
+
+  # plot_csv_timeseries.py plots every CSV in a directory, so cases sharing an
+  # output directory are covered by a single invocation.
   echo "=== Plotting ==="
   declare -A PLOTTED=()
   for i in "${OK_CASES[@]}"; do

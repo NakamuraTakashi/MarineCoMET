@@ -1,0 +1,191 @@
+
+&ecosys_config
+! Simulation period     
+  Tmax = 15.0d0 ! days    ! 3years: 1095 / 5years: 1825 / 40years: 14600 / 100years: 36500
+
+! Start time
+  time0 = 0.0d0 ! day
+
+! Setting of condition (nsetting)
+!
+!     nSetting = 1: Stable condition
+!                2: Closed chamber condition
+!                3: Constant flow condition
+!                4: Inner-reef box model simulation
+!                5: Incubation chamber simulation of Nakamura & Nakamori (2009) experiments
+!                6: Flume simulation of Comeau et al. (2016) experiments   
+!                7: Vertical profile simulation   
+  nSetting = 1
+
+  Im = 1
+  Jm = 1
+  N  = 1
+
+  dt = 1.0d0
+
+  depth = 2.0d0 ! Set depth (m)  ! 5.0d0 until 2026-08-14; 2 m suits a reef flat
+
+  isplitc   = 20
+
+!** For stabilize sediment model ****
+! isplitsed > 1.0d3 * sgd_flux_in * dt
+!    because  Courant Number: C = v*dt/dz < 1 
+!      -> sgd_flux_in*dt/isplitsed/dz_min < 1 (dz_min = 0.001 m)
+  isplitsed = 5
+!  isplitsed = 20  
+/
+
+&refdate
+  Ryear  = 2000   ! Reference year
+  Rmonth = 1      ! Reference month
+  Rday   = 1      ! Reference day
+/
+
+&input_info
+! frc_file(i) >= 1:  Number of input file for each parameter
+! frc_file(i) =  0:  No input file (set values analytically)
+!
+! 1: swrad, 2: lwrad_down 3: Tair, 4: Pair, 5: wind, 
+! 6: rain,  7: Relative humidity, 8: cloud
+! 9: Photosynthetic photon flux density
+! 10: water temp,  11: Water level 
+! 12: Wave
+!    
+!           1       5     8 9 10  12
+!           |       |     | | |   |
+  in_file = 0,0,0,0,0,0,0,0,1,1,0,0
+/
+
+&input
+! Both ascii text file and roms frc netcdf file (1D) are acceptable.
+! *if netcdf files are used, activate INPUT_ROMS_FRC in cppdefs.h.
+
+  SWRad_FILE = "input/Ishigaki_frc_JMAobs_2018_swrad.nc"
+  LWRad_FILE = "input/Ishigaki_frc_JMAobs_2018_lwrad_down.nc"
+  Tair_FILE  = "input/Ishigaki_frc_JMAobs_2018_Tair.nc"
+  Pair_FILE  = "input/Ishigaki_frc_JMAobs_2018_Pair.nc"
+  Wind_FILE  = "input/Ishigaki_frc_JMAobs_2018_wind.nc"
+  Rain_FILE  = "input/Ishigaki_frc_JMAobs_2018_rain.nc"
+  Rh_FILE    = "input/Ishigaki_frc_JMAobs_2018_Qair.nc"    ! Relative humidity (%)
+  Cloud_FILE = "input/Ishigaki_frc_JMAobs_2018_cloud.nc"    ! Relative humidity (%)
+
+! Only ascii text file is acceptable.
+  PPFD_FILE  = "input/PPFD_400.csv"  !!! Used
+! Only ascii text file is acceptable.
+  WTEMP_FILE  = "input/temp_25.csv" !!! Used
+  
+  WLEVEL_FILE = "input/level2017.txt"
+! Only ascii text file is acceptable.
+  WAVE_FILE   = "input/Shiraho_wave2_201701.dat"
+/
+
+&output   
+  OUTFILE_prefix = 'output01/T25-L400'
+/
+
+&sedeco_config
+
+  Fdep_sed_in  = 3.0d-8  ! Sedimentation rate (g cm-2 s-1); 2.77d-8 g/cm2/s = 1.0 g/m2/h
+                          ! (Positive: sedimentation; Negative: erosion)
+  MnO2_sed_in  = 1.0d2   ! Manganese oxide (MnO2) concentration in sediments [nmol/g(DW)]
+!  MnO2_sed_in  = 1.0d4   ! Manganese oxide (MnO2) concentration in sediments [nmol/g(DW)]
+  FeOOH_sed_in = 1.0d3   ! Iron hydroxide (FeOOH) concentration in sediments [nmol/g(DW)]
+  FeS2_sed_in  = 1.0d3   ! Iron sulfide (FeS2) concentration in sediments [nmol/g(DW)]
+!  FeOOH_sed_in = 5.0d5   ! Iron hydroxide (FeOOH) concentration in sediments [nmol/g(DW)]
+!  FeS2_sed_in  = 5.0d5   ! Iron sulfide (FeS2) concentration in sediments [nmol/g(DW)]
+  LPOC_sed_in = 2.0d3   ! Labile Organic carbon in sediments [nmol/g(DW)]
+  RPOC_sed_in = 2.0d6   ! Refractory Organic carbon in sediments [nmol/g(DW)]
+                         !  (~2000 umolC g-1; Miyajima et al., 2015)
+  rCaCO3_sed_in = 0.8d0 ! Fraction of Calcium carbonate (CaCO3) in sediments [% DW]
+
+! parameters of sumbarine groundwater discharge (set: SGD_ON)
+  sgd_flux_in = 0.0d-2   ! sumbarine groundwater discharge rate (cm s-1) 
+  sgd_Tmp_in  = 25.0d0  ! SGD concentration coming in through bottom: Tmp: Temperature (oC)
+  sgd_Sal_in  = 1.0d0  ! SGD concentration coming in through bottom: Sal: Salinity (PSU)
+  sgd_DOx_in  = 50.0d0  ! SGD concentration coming in through bottom: DOx: Dissolved oxygen (umol L-1)
+  sgd_TA_in   = 3500.0d0  ! SGD concentration coming in through bottom: TA : Total alkalinity (TA: umol kg-1)
+  sgd_DIC_in  = 3500.0d0  ! SGD concentration coming in through bottom: DIC: Total dissolved inorganic carbon (DIC: umol kg-1)
+  sgd_NO3_in  = 100.0d0  ! SGD concentration coming in through bottom: NO3: NO3 (umol L-1)
+  sgd_NH4_in  = 1.0d0  ! SGD concentration coming in through bottom: NH4: NH4 (umol L-1)
+  sgd_PO4_in  = 1.0d0  ! SGD concentration coming in through bottom: PO4: PO4 (umol L-1)
+  sgd_DOC_in  = 200.0d0, 100.0d0
+  sgd_DON_in  =  30.2d0,  15.1d0
+  sgd_DOP_in  =   1.9d0,   0.9d0
+
+/
+
+&sgrass_config  
+  XI_size_in  = 50.0d0 ! (m)
+  ETA_size_in = 50.0d0 ! (m)
+/
+
+!--- Initial Condition -----------------------------------------------------
+&initial
+
+  T0 = 25.0d0          ! Water temperature (oC)
+  S0 = 34.0d0          ! Salinity (PSU)
+  Sed1_0  = 0.0d0      ! Sediment concentration (g m-3)
+
+!  pCO2air = 400.0d0   ! 383.0d0  !!! RCP8.5: 936.0d0 (uatm); RCP2.6: 421.0d0 (uatm)
+
+  Oxyg0 = 250.0d0      ! DO  (umol L-1)
+  TAlk0 = 2232.0d0     ! TA  (umol kg-1) 
+  TIC_0 = 1915.0d0     ! DIC (umol kg-1)  !!! 2050.0d0 @ fCO2=800uatm;  2030.0d0 @ fCO2=700uatm 
+  NO3_0 = 0.2d0        ! NO3  (umol L-1)  control: 0.2d0, N: 1.8d0, N*2: 3.5d0
+  NH4_0 = 0.26d0       ! NH4  (umol L-1) 
+  PO4_0 = 0.04d0       ! PO4  (umol L-1)  control: 0.04d0, P: 0.2d0
+
+  DOC_0 = 10.0d0, 50.0d0         ! DOC (umol C L-1); Labile, Refractory
+!  POC_0 = 0.42d0,  1.0d0, 0.1d0  ! POC (umol C L-1); Labile, Refractory, Coarse 
+  POC_0 = 4.2d0,  10.0d0, 1.0d0  ! POC (umol C L-1); Labile, Refractory, Coarse 
+!  DON_0 = 5.0d0, 50.0d0         ! DON (umol N L-1); Labile, Refractory
+!  PON_0 = 0.042d0,  0.1d0, 0.1d0  ! PON (umol N L-1); Labile, Refractory, Coarse 
+!  DOP_0 = 5.0d0, 50.0d0         ! DOP (umol P L-1); Labile, Refractory
+!  POP_0 = 1.0d0,  0.1d0, 0.1d0  ! POP (umol P L-1); Labile, Refractory, Coarse 
+ PhyC_0 = 1.0d0,  2.0d0, 0.1d0, 1.0d0   ! PhyC (umolC L-1): Dinoflagellate, Diatom, Coccolithophorids,  
+ ZooC_0 = 0.3d0 !0.1d0       ! ZooC (umol L-1)
+! PhyN_0 = 1.0d0,  2.0d0, 0.1d0, 1.0d0   ! PhyC (umolC L-1): Dinoflagellate, Diatom, Coccolithophorids,  
+! ZooN_0 = 0.1d0       ! ZooC (umol L-1)
+! PhyP_0 = 1.0d0,  2.0d0, 0.1d0, 1.0d0   ! PhyC (umolC L-1): Dinoflagellate, Diatom, Coccolithophorids,  
+! ZooP_0 = 0.1d0       ! ZooC (umol L-1)
+  PIC_0 = 0.00d0, 0.05d0       ! PIC (umol L-1) 
+                               ! *PIC_0(1)=PIC_0(iLive) is dummy data. Internally calculated from rCaCp (Ca:OrgC) value.
+
+d13C_TIC0 = 0.0d0      ! d13C_TIC (permill VPDB)
+                       !   0.0 is a generic open-ocean surface DIC value.
+                       !   0.7d0 until 2026-08-14 (summer measurement at Ishigaki);
+                       !   the skeleton transcribes this almost 1:1, so changing it
+                       !   shifts skeletal d13C by the same amount.
+d13C_DOC_0 = -15.0d0, -15.0d0 ! d13C_DOC (permill VPDB)
+d13C_POC_0 = -15.0d0, -15.0d0, -15.0d0  ! d13C_POC (permill VPDB)
+d13C_PhyC_0 = -15.0d0, -15.0d0, -15.0d0, -15.0d0 ! d13C_phytoplankton (permill VPDB); Nphy=4 - the 4th was missing and read as undefined
+d13C_ZooC_0 = -20.0d0 ! d13C_zooplankton (permill VPDB)
+d13C_PIC_0 = -5.0d0, -5.0d0   ! d13C_PIC (permill VPDB); Npim=2 - the 2nd was missing and read as undefined
+
+d15N_NO3_0 = 0.7d0       ! d15N_NO3 (permill)
+d15N_NH4_0 = 0.7d0       ! d15N_TIC (permill)
+d15N_DON_0 = -15.0d0, -15.0d0   ! d15N_DOC (permill)
+d15N_PON_0 = -15.0d0,-15.0d0,-15.0d0    ! d15N_POC (permill)
+d15N_PhyN_0 = -15.0d0,-15.0d0,-15.0d0,-15.0d0   ! d15N_phytoplankton (permill); Nphy=4 - the 4th was missing and read as undefined
+d15N_ZooN_0 = -20.0d0   ! d15N_zooplankton (permill)
+
+! U_0: reference near-bottom current speed (cm s-1).
+!   tau = 0.5*densSW*Cd_tau*(U_0*0.01)^2 drives the coral-seawater mass transfer.
+!   The 0.5 and Cd_tau = 0.02 follow Falter et al. (2016) equation (3); see the
+!   comment on tau in mod_input.F before changing either.
+!   0 falls back to the molecular-diffusion floor of the 1 mm ciliary boundary
+!   layer.  See doc/README.md section 18 for the U sweep and section 25 for the
+!   Cd_tau revision (Cd_tau 0.01 -> 0.02 and U_0 5 -> 3 on 2026-08-14).
+U_0 = 5.0d0
+
+! Coral coverage (0-1) per type.  The two types share every parameter, so type 2
+! is a byte-for-byte duplicate of type 1 - setting it to 0 skips its computation
+! (mod_marine_comet.F guards the coral_polyp call with p_coral > 0) and leaves the
+! crl02 output files empty.  Restore 0.5d0, 0.5d0 to run a 2-point sensitivity
+! scan with the two types given different parameters.
+p_coral_0 = 0.5d0, 0.0d0  ! Coral coverage (0-1): inner reef, outer reef 
+p_algae_0  = 0.0d0  ! Macro algae coverage (0-1)
+p_sgrass_0 = 0.0d0  ! Seagrass coverage (0-1)
+p_sand_0   = 1.0d0  ! Sand coverage (0-1)
+
+/
