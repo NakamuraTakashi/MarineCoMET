@@ -3017,7 +3017,7 @@ CONTAINS
 !===== Chl dynamics calculation ==============================================
 !    dChl_dt = uchl_max * (1.0d0 - QCzr/QCzr_max)
 !    dChl_dt = - 3.0d-6*ROS + 3.0d-5
-    dChl_dt = 1.0d-7*(3.0d0-ROS)
+    dChl_dt = 0.0d0 !1.0d-7*(3.0d0-ROS)
 !-----Chl concentration (pg cell-1) -----------------
     Chl = Chl + dChl_dt *dt
     Chl = max(Chl,0.0d0) !!!Error handring

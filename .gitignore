@@ -42,6 +42,7 @@
 
 # Input Files
 !sedeco_rst.csv
+!Projects/coral_exp_202503/input/*.csv
 
 # Backup Files
 backup/*
